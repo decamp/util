@@ -181,10 +181,10 @@
     
     <!-- commit and push -->
     <exec executable="git" dir="${precomp.dir}" failonerror="true">
-      <arg line="commit -am 'Updated precompiled version.'" />
+      <arg line="commit -am 'Updating precompiled'" />
     </exec>
     <exec executable="git" dir="." failonerror="true">
-      <arg line="commit push github master" />
+      <arg line="commit push origin master" />
     </exec>
   </target>
     
