@@ -184,7 +184,7 @@
       <arg line="commit -am 'Updating precompiled'" />
     </exec>
     <exec executable="git" dir="." failonerror="true">
-      <arg line="commit push origin master" />
+      <arg line="push origin master" />
     </exec>
   </target>
     
