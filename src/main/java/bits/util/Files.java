@@ -24,13 +24,13 @@ public final class Files {
         return idx <= 0 ? "" : name.substring(idx + 1).toLowerCase().intern();
     }
 
-    
-    public static File setSuffix( File file, String newSuffix ) {
+
+    public static File withSuffix( File file, String newSuffix ) {
         File parentFile = file.getParentFile();
         String name = baseName( file );
         return new File( parentFile, name + "." + newSuffix );
     }
-    
+
     
     public static String baseName( File file ) {
         return baseName( file.getName() );
@@ -43,7 +43,7 @@ public final class Files {
     }
 
     
-    public static File setBaseName( File file, String newBaseName ) {
+    public static File withBaseName( File file, String newBaseName ) {
         File dir = file.getParentFile();
         String suffix = suffix( file );
         return new File( dir, newBaseName + "." + suffix );
@@ -214,5 +214,17 @@ public final class Files {
     
     
     private Files() {}
+
+
+
+    @Deprecated public static File setSuffix( File file, String newSuffix ) {
+        return withSuffix( file, newSuffix );
+    }
+
+
+    @Deprecated public static File setBaseName( File file, String newBaseName ) {
+        return withBaseName( file, newBaseName );
+    }
+
 
 }
