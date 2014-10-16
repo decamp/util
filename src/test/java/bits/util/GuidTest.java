@@ -1,16 +1,13 @@
-package bits.util;
-/* 
+/*
  * Copyright (c) 2012, Massachusetts Institute of Technology
  * Released under the BSD 2-Clause License
  * http://opensource.org/licenses/BSD-2-Clause 
- */ 
-
-
-import static org.junit.Assert.*;
+ */
+package bits.util;
 
 import org.junit.Test;
+import static org.junit.Assert.*;
 
-import bits.util.Guid;
 
 /**
  * @author decamp
