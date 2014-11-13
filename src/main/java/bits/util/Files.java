@@ -13,7 +13,25 @@ import java.nio.channels.FileChannel;
  * @author Philip DeCamp
  */
 public final class Files {
-    
+
+    public static String baseName( File file ) {
+        return baseName( file.getName() );
+    }
+
+
+    public static String baseName( String name ) {
+        int idx = name.lastIndexOf( "." );
+        return idx < 0 ? name : name.substring( 0, idx );
+    }
+
+
+    public static File withBaseName( File file, String newBaseName ) {
+        File dir = file.getParentFile();
+        String suffix = suffix( file );
+        return new File( dir, newBaseName + "." + suffix );
+    }
+
+
     public static String suffix( File file ) {
         return suffix( file.getName() );
     }
@@ -31,31 +49,10 @@ public final class Files {
         return new File( parentFile, name + "." + newSuffix );
     }
 
-    
-    public static String baseName( File file ) {
-        return baseName( file.getName() );
-    }
-    
-    
-    public static String baseName( String name ) {
-        int idx = name.lastIndexOf( "." );
-        return idx < 0 ? name : name.substring( 0, idx );
-    }
-
-    
-    public static File withBaseName( File file, String newBaseName ) {
-        File dir = file.getParentFile();
-        String suffix = suffix( file );
-        return new File( dir, newBaseName + "." + suffix );
-    }
-    
     /**
-     * Determines if a path is relative or absolute, then combines it
-     * with a base directory as necessary.
-     * 
-     * @param base
-     * @param path
-     * @return
+     * Determines if a path is relative or absolute. If absolute,
+     * it's returned as is. If relative, it's combined with the
+     * provided base directory.
      */
     public static File resolve( File base, String path ) {
         if( path == null ) {
@@ -74,11 +71,6 @@ public final class Files {
     /**
      * Computes the relative path between <i>file</i> and <i>oldBase</i> and
      * adds that path to <i>newBase</i>.
-     * 
-     * @param file
-     * @param oldBase
-     * @param newBase
-     * @return
      */
     public static File rebase( File file, File oldBase, File newBase ) {
         if( file == null || file.equals( oldBase ) ) {
@@ -86,14 +78,12 @@ public final class Files {
         }
         return new File( rebase( file.getParentFile(), oldBase, newBase ), file.getName() );
     }
-    
 
-    @SuppressWarnings( "resource" )
+
     public static void copy( File source, File dest ) throws IOException {
         if( dest.exists() ) {
-            throw new IOException(dest.getPath() + " exists.");
+            throw new IOException( dest.getPath() + " exists." );
         }
-        
         FileChannel s = new FileInputStream( source ).getChannel();
         FileChannel d = new FileOutputStream( dest ).getChannel();
         d.transferFrom( s, 0, s.size() );
@@ -101,7 +91,7 @@ public final class Files {
         d.close();
     }
     
-    
+
     public static void move( File in, File out ) throws IOException {
         if( !in.renameTo( out ) ) {
             throw new IOException( "Failed to move " + in.getPath() + " to " + out.getPath() );
@@ -135,7 +125,7 @@ public final class Files {
             }
         };
     }
-    
+
 
     
     private static void appendPath( String path, StringBuilder out ) {
