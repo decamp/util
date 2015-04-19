@@ -425,6 +425,43 @@ public class Images {
             image.setRGB( 0, y, w, 1, optWork, 0, w );
         }
     }
+
+    /**
+     * Multiplies each pixel by another color value (normalized by 255).
+     * For example, for a given pixel: <br>
+     * {@code 0xAaRrGgBb * 0xFFFFFFFF = 0xAaRrGgBb} <br>
+     * {@code 0xAaRrGgBb * 0xFF000000 = 0xAa000000}
+     *
+     * @param image   Image to mult.
+     * @param argb    The 4 coefficients used to multiply each color component (a, r, g, b )
+     * @param optWork Working memory. Can avoid a memory allocation if optWork != null and
+     *                optWork.length >= image.getWidth().
+     */
+    public static void mult( BufferedImage image, int argb, int[] optWork ) {
+        final int w = image.getWidth();
+        final int h = image.getHeight();
+        final int va = ( argb >>> 24        );
+        final int vr = ( argb >>> 16 & 0xFF );
+        final int vg = ( argb >>>  8 & 0xFF );
+        final int vb = ( argb        & 0xFF );
+
+        if( optWork == null || optWork.length < w ) {
+            optWork = new int[w];
+        }
+
+        for( int y = 0; y < h; y++ ) {
+            image.getRGB( 0, y, w, 1, optWork, 0, w );
+            for( int x = 0; x < w; x++ ) {
+                int v = optWork[x];
+                int a = ( v >>> 24        ) * va / 0xFF;
+                int r = ( v >>  16 & 0xFF ) * vr / 0xFF;
+                int g = ( v >>   8 & 0xFF ) * vg / 0xFF;
+                int b = ( v        & 0xFF ) * vb / 0xFF;
+                optWork[x] = a << 24 | r << 16 | g << 8 | b;
+            }
+            image.setRGB( 0, y, w, 1, optWork, 0, w );
+        }
+    }
     
     
     public static void fillRgb( BufferedImage image, int rgb, int[] optWork ) {

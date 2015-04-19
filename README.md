@@ -1,7 +1,7 @@
 ### BITS Utility Library
 Various utilities. This is primarily a personal toolkit that many other projects depend on.
 
-There's a lot of overlap between this library and Google Guava, including a lot of the classnames, unfortunately. I
+There's a lot of overlap between this library and Google Guava, including a lot of the classnames, unfortunately. E
 don't have any current plans to switch to Guava.
 
 This library contains:
