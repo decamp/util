@@ -64,9 +64,11 @@ public final class Guid implements Serializable, Comparable<Guid> {
      * 
      * Note that this number is negative.
      */
-    private static final long OFFSET_MILLIS = 0xFFFFF4E2F964AC00L;
-    private static final char[] TABLE_TO_BASE64  = new char[64];
-    private static final int[] TABLE_FROM_BASE64 = new int[128];
+    private static final long   OFFSET_MILLIS     = 0xFFFFF4E2F964AC00L;
+    private static final char[] TABLE_TO_BASE64   = new char[64];
+    private static final int[]  TABLE_FROM_BASE64 = new int[128];
+    private static final char[] TABLE_TO_URL      = new char[64];
+    private static final int[]  TABLE_FROM_URL    = new int[128];
 
     private static final SecureRandom sSecureRand = new SecureRandom();
     private static final long sStaticBits;
@@ -93,12 +95,18 @@ public final class Guid implements Serializable, Comparable<Guid> {
         }
         TABLE_TO_BASE64[62] = '+';
         TABLE_TO_BASE64[63] = '/';
-        
+
+        System.arraycopy( TABLE_TO_BASE64, 0, TABLE_TO_URL, 0, TABLE_TO_BASE64.length );
+        TABLE_TO_URL[62] = '_';
+        TABLE_TO_URL[63] = '-';
+
         Arrays.fill( TABLE_FROM_BASE64, -1 );
+        Arrays.fill( TABLE_FROM_URL, -1 );
         for( int i = 0; i < 64; i++ ) {
-            TABLE_FROM_BASE64[TABLE_TO_BASE64[i]] = i;
+            TABLE_FROM_BASE64[ TABLE_TO_BASE64[i] ] = i;
+            TABLE_FROM_URL[ TABLE_TO_URL[i] ] = i;
         }
-        
+
         // Initialize statically random bits.
 
         // Get clock sequence bits.
@@ -143,7 +151,7 @@ public final class Guid implements Serializable, Comparable<Guid> {
             } catch( SocketException ignore ) {}
             
             digest.update( (byte)'#' );
-            String s = System.getProperty( "java.user.name" );
+            String s = System.getProperty( "user.name" );
             if( s != null ) {
                 digest.update( s.getBytes( "UTF-8" ) );
             }
@@ -340,8 +348,7 @@ public final class Guid implements Serializable, Comparable<Guid> {
     }
     
     /**
-     * @param uuid
-     * @return equivalent Guid
+     * @return Guid object equivalent to {@code uuid}.
      */
     public static Guid fromUUID( UUID uuid ) {
         return new Guid( uuid.getMostSignificantBits(), uuid.getLeastSignificantBits() );
@@ -414,6 +421,67 @@ public final class Guid implements Serializable, Comparable<Guid> {
     }
 
     /**
+     * @param s UUID data in url-safe Base64 format
+     * @return equivalent Guid object
+     * @throws IllegalArgumentException if <code>s</code> is not a valid URL-Base64 representation.
+     */
+    public static Guid fromUrl( String s ) {
+        if( s.length() != 22 ) {
+            throw new IllegalArgumentException( "Invalid UUID string: " + s );
+        }
+
+        //char[] c = s.toCharArray();
+        long msb = 0;
+        long lsb = 0;
+
+        try {
+            for( int i = 0; i < 10; i++ ) {
+                int v = TABLE_FROM_URL[ s.charAt( i ) ];
+                if( v < 0 ) {
+                    throw new IllegalArgumentException( "Invalid UUID string: " + s );
+                }
+                msb <<= 6;
+                msb |= v;
+            }
+
+            {
+                lsb = TABLE_FROM_URL[ s.charAt( 10 ) ];
+                if( lsb < 0 ) {
+                    throw new IllegalArgumentException( "Invalid UUID string: " + s );
+                }
+                msb <<= 4;
+                msb |= (lsb >> 2);
+            }
+
+            for( int i = 11; i < 21; i++ ) {
+                int v = TABLE_FROM_URL[ s.charAt( i ) ];
+                if( v < 0 ) {
+                    throw new IllegalArgumentException( "Invalid UUID string: " + s );
+                }
+                lsb <<= 6;
+                lsb |= v;
+            }
+
+            {
+                int v = TABLE_FROM_URL[ s.charAt( 21 ) ];
+                if( v < 0 ) {
+                    throw new IllegalArgumentException( "Invalid UUID string: " + s );
+                }
+                lsb <<= 2;
+                lsb |= ( v >> 4 );
+            }
+        } catch( Exception ex ) {
+            if( ex instanceof IllegalArgumentException ) {
+                throw (IllegalArgumentException)ex;
+            } else {
+                throw new IllegalArgumentException( "Invalid UUID string: " + s );
+            }
+        }
+
+        return new Guid( msb, lsb );
+    }
+
+    /**
      * @param s  Guid data in canonical hex format : "XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX"
      * @return parsed Guid object
      * @throws NumberFormatException if <code>s</code> cannot be parsed.
@@ -476,55 +544,54 @@ public final class Guid implements Serializable, Comparable<Guid> {
         
         return new Guid( msb, lsb );
     }
-    
-    
 
-    final long mMostSigBits;
-    final long mLeastSigBits;
-    
-    
+
+    final long mMostSig;
+    final long mLeastSig;
+
+
     public Guid( long mostSigBits, long leastSigBits ) {
-        mMostSigBits = mostSigBits;
-        mLeastSigBits = leastSigBits;
+        mMostSig = mostSigBits;
+        mLeastSig = leastSigBits;
     }
-    
+
 
     public long mostSignificantBits() {
-        return mMostSigBits;
+        return mMostSig;
     }
 
     public long leastSignificantBits() {
-        return mLeastSigBits;
+        return mLeastSig;
     }
 
 
     public int variant() {
-        if( ( mLeastSigBits >>> 62 ) == 0x2 ) {
+        if( (mLeastSig >>> 62) == 0x2 ) {
             return 2;
         }
-        if( ( mLeastSigBits & 0x8000000000000000L ) == 0 ) {
+        if( (mLeastSig & 0x8000000000000000L) == 0 ) {
             return 0;
         }
-        return (int)( mLeastSigBits >>> 61 );
+        return (int)(mLeastSig >>> 61);
     }
 
     public int version() {
-        return (int)( mMostSigBits >> 12 ) & 0x000F;
+        return (int)(mMostSig >> 12) & 0x000F;
     }
 
     public boolean hasTimestamp() {
         return version() == 1;
     }
-    
+
     public long timestampMicros() {
         long raw = rawTimestamp();
-        return ( raw / 10 ) - OFFSET_MILLIS * 1000;
+        return (raw / 10) - OFFSET_MILLIS * 1000;
     }
-    
+
     public long rawTimestamp() {
-        long t = ( ( mMostSigBits << 48 ) & 0x0FFF000000000000L );
-        t |= ( ( mMostSigBits << 16 ) & 0x0000FFFF00000000L );
-        t |= ( ( mMostSigBits >> 32 ) & 0x00000000FFFFFFFFL );
+        long t = ((mMostSig << 48) & 0x0FFF000000000000L);
+        t |= ((mMostSig << 16) & 0x0000FFFF00000000L);
+        t |= ((mMostSig >> 32) & 0x00000000FFFFFFFFL);
 
         return t;
     }
@@ -532,46 +599,45 @@ public final class Guid implements Serializable, Comparable<Guid> {
     public boolean hasClockSequence() {
         return version() == 1;
     }
-    
+
     public int clockSequence() {
-        return ( (int)(mLeastSigBits >> 48) & 0x3FFF );
+        return ((int)(mLeastSig >> 48) & 0x3FFF);
     }
 
     public boolean hasNode() {
         return version() == 1;
     }
-    
-    public long node() {
-        return mLeastSigBits & 0x00000000FFFFFFFFL;
-    }
 
+    public long node() {
+        return mLeastSig & 0x00000000FFFFFFFFL;
+    }
 
 
     public UUID toUUID() {
-        return new UUID( mMostSigBits, mLeastSigBits );
+        return new UUID( mMostSig, mLeastSig );
     }
-    
+
     public String toHex() {
         // About 50x faster than using String.format().
         char[] c = new char[36];
         for( int i = 0; i < 8; i++ ) {
-            c[i] = formatHexChar( (int)( mMostSigBits >> ( 60 - i * 4 ) ) & 0xF );
+            c[i] = formatHexChar( (int)(mMostSig >> (60 - i * 4)) & 0xF );
         }
-        c[ 8] = '-';
+        c[8] = '-';
         for( int i = 9; i < 13; i++ ) {
-          c[i] = formatHexChar( (int)( mMostSigBits >> ( 64 - i * 4 ) ) & 0xF );   
+            c[i] = formatHexChar( (int)(mMostSig >> (64 - i * 4)) & 0xF );
         }
         c[13] = '-';
         for( int i = 14; i < 18; i++ ) {
-            c[i] = formatHexChar( (int)( mMostSigBits >> ( 68 - i * 4 ) ) & 0xF );
+            c[i] = formatHexChar( (int)(mMostSig >> (68 - i * 4)) & 0xF );
         }
         c[18] = '-';
         for( int i = 19; i < 23; i++ ) {
-            c[i] = formatHexChar( (int)( mLeastSigBits >> ( 136 - i * 4 ) ) & 0xF );
+            c[i] = formatHexChar( (int)(mLeastSig >> (136 - i * 4)) & 0xF );
         }
         c[23] = '-';
         for( int i = 24; i < 36; i++ ) {
-            c[i] = formatHexChar( (int)( mLeastSigBits >> ( 140 - i * 4 ) ) & 0xF );
+            c[i] = formatHexChar( (int)(mLeastSig >> (140 - i * 4)) & 0xF );
         }
 
         return new String( c );
@@ -582,19 +648,39 @@ public final class Guid implements Serializable, Comparable<Guid> {
         int shift = 58;
 
         for( int i = 0; i < 10; i++, shift -= 6 ) {
-            c[i] = TABLE_TO_BASE64[ (int)( ( mMostSigBits >> shift ) & 0x3F )];
+            c[i] = TABLE_TO_BASE64[(int)((mMostSig >> shift) & 0x3F)];
         }
 
-        c[10] = TABLE_TO_BASE64[ (int)( ( mMostSigBits << 2 ) & 0x3C | ( ( mLeastSigBits >>> 62 ) & 0x3 ) )];
+        c[10] = TABLE_TO_BASE64[(int)((mMostSig << 2) & 0x3C | ((mLeastSig >>> 62) & 0x3))];
 
         shift = 56;
         for( int i = 11; i < 21; i++, shift -= 6 ) {
-            c[i] = TABLE_TO_BASE64[ (int)( ( mLeastSigBits >> shift ) & 0x3F) ];
+            c[i] = TABLE_TO_BASE64[(int)((mLeastSig >> shift) & 0x3F)];
         }
 
-        c[21] = TABLE_TO_BASE64[ (int)( ( mLeastSigBits << 4 ) & 0x30) ];
+        c[21] = TABLE_TO_BASE64[(int)((mLeastSig << 4) & 0x30)];
         c[22] = '=';
         c[23] = '=';
+
+        return new String( c );
+    }
+
+    public String toUrl() {
+        char[] c = new char[22];
+        int shift = 58;
+
+        for( int i = 0; i < 10; i++, shift -= 6 ) {
+            c[i] = TABLE_TO_URL[(int)((mMostSig >> shift) & 0x3F)];
+        }
+
+        c[10] = TABLE_TO_URL[(int)((mMostSig << 2) & 0x3C | ((mLeastSig >>> 62) & 0x3))];
+
+        shift = 56;
+        for( int i = 11; i < 21; i++, shift -= 6 ) {
+            c[i] = TABLE_TO_URL[(int)((mLeastSig >> shift) & 0x3F)];
+        }
+
+        c[21] = TABLE_TO_URL[(int)((mLeastSig << 4) & 0x30)];
 
         return new String( c );
     }
@@ -604,26 +690,26 @@ public final class Guid implements Serializable, Comparable<Guid> {
         toBytes( ret, 0 );
         return ret;
     }
-    
+
     public void toBytes( byte[] arr, int off ) {
-        for( int i = 0; i  < 8; i++ ) {
-            arr[off+i] = (byte)( mMostSigBits >> 56 - i * 8 );
+        for( int i = 0; i < 8; i++ ) {
+            arr[off + i] = (byte)(mMostSig >> 56 - i * 8);
         }
         off += 8;
         for( int i = 0; i < 8; i++ ) {
-            arr[off+i] = (byte)( mLeastSigBits >> 56 - i * 8 );
+            arr[off + i] = (byte)(mLeastSig >> 56 - i * 8);
         }
     }
-    
+
     public String toString() {
         return toHex();
     }
-    
+
     public int hashCode() {
-        return (int)( ( mMostSigBits >> 32  ) ^
-                      ( mMostSigBits        ) ^
-                      ( mLeastSigBits >> 32 ) ^ 
-                      ( mLeastSigBits       ) );
+        return (int)((mMostSig >> 32) ^
+                     (mMostSig) ^
+                     (mLeastSig >> 32) ^
+                     (mLeastSig));
     }
 
     public boolean equals( Object obj ) {
@@ -631,75 +717,82 @@ public final class Guid implements Serializable, Comparable<Guid> {
             return false;
         }
         Guid g = (Guid)obj;
-        return ( mMostSigBits == g.mMostSigBits ) &&
-               ( mLeastSigBits == g.mLeastSigBits );
+        return (mMostSig == g.mMostSig) &&
+               (mLeastSig == g.mLeastSig);
     }
-    
+
     public int compareTo( Guid val ) {
-        if( mMostSigBits < val.mMostSigBits ) {
+        if( mMostSig < val.mMostSig ) {
             return -1;
         }
-        if( mMostSigBits > val.mMostSigBits ) {
+        if( mMostSig > val.mMostSig ) {
             return 1;
         }
-        if( mLeastSigBits < val.mLeastSigBits ) {
+        if( mLeastSig < val.mLeastSig ) {
             return -1;
         }
-        if( mLeastSigBits > val.mLeastSigBits ) {
+        if( mLeastSig > val.mLeastSig ) {
             return 1;
         }
         return 0;
     }
-    
+
     private static int parseHexChar( char c ) {
         if( c <= '9' ) {
             if( c >= '0' ) {
                 return c - '0';
-            } 
+            }
         } else if( c <= 'F' ) {
             if( c >= 'A' ) {
-                return c - ( 'A' - 10 );
+                return c - ('A' - 10);
             }
-        } else if ( c <= 'f' ) {
+        } else if( c <= 'f' ) {
             if( c >= 'a' ) {
-                return c - ( 'a' - 10 );
+                return c - ('a' - 10);
             }
         }
-        
+
         throw new IllegalArgumentException();
     }
 
     private static char formatHexChar( int c ) {
-        return (char)( c + ( c < 10 ? '0' : 'A' - 10 ) ); 
+        return (char)(c + (c < 10 ? '0' : 'A' - 10));
     }
-    
-    
-    @Deprecated public static Guid fromString( String s ) {
+
+
+    @Deprecated
+    public static Guid fromString( String s ) {
         return fromHex( s );
     }
 
-    @Deprecated public static Guid newCustomTimeInstance() {
+    @Deprecated
+    public static Guid newCustomTimeInstance() {
         return createTimeBased();
     }
 
-    @Deprecated public static synchronized Guid newNameInstance( Guid namespace, String name ) {
+    @Deprecated
+    public static synchronized Guid newNameInstance( Guid namespace, String name ) {
         return fromName( namespace, name );
     }
-    
-    @Deprecated public static Guid fromHexString( String s ) { 
-        return fromHex( s ); 
+
+    @Deprecated
+    public static Guid fromHexString( String s ) {
+        return fromHex( s );
     }
-    
-    @Deprecated public static Guid fromBase64String( String s ) {
+
+    @Deprecated
+    public static Guid fromBase64String( String s ) {
         return fromBase64( s );
     }
 
-    @Deprecated public String toHexString() {
+    @Deprecated
+    public String toHexString() {
         return toHex();
     }
-    
-    @Deprecated public String toBase64String() {
+
+    @Deprecated
+    public String toBase64String() {
         return toBase64();
     }
-    
+
 }

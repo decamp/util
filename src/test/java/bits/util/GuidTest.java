@@ -24,6 +24,9 @@ public class GuidTest {
         
         a = Guid.fromBase64( g.toBase64() );
         assertTrue( a.equals( g ) );
+
+        a = Guid.fromUrl( g.toUrl() );
+        assertTrue( a.equals( g ) );
         
         a = Guid.fromBytes( g.toBytes(), 0 );
         assertTrue( a.equals( g ) );
