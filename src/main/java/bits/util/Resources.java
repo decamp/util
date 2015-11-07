@@ -14,7 +14,12 @@ import java.nio.ByteBuffer;
  * @author Philip DeCamp
  */
 public final class Resources {
-    
+
+    public static URL rootFor( Class<?> clazz ) {
+        return clazz.getProtectionDomain().getCodeSource().getLocation();
+    }
+
+
     public static URL find( String path ) throws IOException {
         File file = new File( path );
         if( file.exists() ) {
