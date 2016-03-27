@@ -18,22 +18,25 @@ import javax.swing.SwingUtilities;
  * objects, using a specified threading strategy.
  * <p>
  * Example:<br>
- * <br>
- * <tt>
- * //You need some object that implements an interface.<br>
- * MouseListener foo = new MouseAdapter() {<br>
- * &nbsp public void mousePressed( MouseEvent e ) {<br>
- * &nbsp&nbsp System.out.println( "I've been accessed!" );<br>
- * &nbsp }<br>
- * };<br><br>
- * //Have the listener join a caster.  The class of the listener interface must be provided.<br>
+ * <br><pre>
+ * {@code
+ * //You need some object that implements an interface.
+ * MouseListener foo = new MouseAdapter() {
+ *   public void mousePressed( MouseEvent e ) {
+ *     System.out.println( "I've been accessed" );
+ *   }
+ * };
+ *
+ * //Have the listener join a caster. The class of the listener interface must be provided.
  * EventCaster<MouseListener> group = EventCaster.create(MouseListener.class);
- * MouseListener groupCaster = group.cast;<br><br>
- * //Broadcast event to all listeners as if calling the method directly.<br>
- * MouseEvent e = new MouseEvent( foo, 0, 0, 0, 0, 0, 0, false );<br>
- * group.cast().mousePressed( e );<br><br>
- * //"I've been accessed!" should be printed to screen.<br>
- * </tt>
+ * MouseListener groupCaster = group.cast;
+ *
+ * //Broadcast event to all listeners as if calling the method directly.
+ * MouseEvent e = new MouseEvent( foo, 0, 0, 0, 0, 0, 0, false );
+ * group.cast().mousePressed( e );
+ *
+ * //"I've been accessed" should be printed to screen.
+ * }</pre>
  * <p>
  * This cass uses reflection to dynamically generate proxy objects that
  * broadcast interface calls to multiple listeners. Casting may be performed by
@@ -45,13 +48,12 @@ import javax.swing.SwingUtilities;
  * <p>
  * However, AN INTERFACE WITH NON-VOID METHODS CANNOT BE USED FOR BROADCASTING.
  * When distributing events asynchronously, it does not make sense for the
- * caller to expect a synchronous return value. The <tt>EventCaster</tt> and
- * <tt>EventGroup</tt> classes will throw a RuntimeException with an insulting
- * message if you pass them a class to an interface with a non-void method.
+ * caller to expect a synchronous return value. EventCaster will throw a
+ * RuntimeException with an insulting message if you pass them a class to
+ * an interface with a non-void method.
  * 
  * @author Philip DeCamp
- * @param <T>
- *            Event interface
+ * @param <T> Event interface
  */
 public class EventCaster<T> implements EventSource<T>, Closeable {
 
@@ -61,17 +63,17 @@ public class EventCaster<T> implements EventSource<T>, Closeable {
 
 
     public static <T> EventCaster<T> create( Class<T> clazz ) {
-        return new EventCaster<T>( clazz );
+        return new EventCaster<>( clazz );
     }
 
 
     public static <T> EventCaster<T> create( Class<T> clazz, int threadingType ) {
-        return new EventCaster<T>( clazz, threadingType );
+        return new EventCaster<>( clazz, threadingType );
     }
 
 
     public static <T> EventCaster<T> create( Class<T> clazz, Executor executor ) {
-        return new EventCaster<T>( clazz, executor );
+        return new EventCaster<>( clazz, executor );
     }
 
 
@@ -117,13 +119,13 @@ public class EventCaster<T> implements EventSource<T>, Closeable {
 
     @Override
     public synchronized void addListener( T listener ) {
-        mListeners = new Node( new StrongRef<T>( listener ), mListeners );
+        mListeners = new Node( new StrongRef<>( listener ), mListeners );
         mListenerCount++;
     }
 
 
     public synchronized void addListenerWeakly( T listener ) {
-        mListeners = new Node( new WeakReference<T>( listener ), mListeners );
+        mListeners = new Node( new WeakReference<>( listener ), mListeners );
         mListenerCount++;
     }
 

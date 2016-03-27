@@ -62,7 +62,7 @@ public abstract class AbstractRefable implements Refable {
     }
     
     /**
-     * Called from deref() when refCount reaches <= 0 and object is placed in pool.
+     * Called from deref() when {@code refCount <= 0 } and object is placed in pool.
      */
     protected abstract void freeObject();
     

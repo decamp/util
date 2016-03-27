@@ -23,8 +23,8 @@ public class ClassFinder {
      * Finds all the resources spanned by the provided packageName. Resources
      * are returned as URLs and may represent directories or jar files. 
      *
-     * Resources are found using the calling thread's context class loader:<br/>
-     * <code>Thread.currentThread().getContextClassLoader()</code>
+     * Resources are found using the calling thread's context class loader:<br>
+     * {@code Thread.currentThread().getContextClassLoader()}
      * 
      * @param packageName A package to check for resources.
      * @return a list of all resources found.
@@ -71,8 +71,8 @@ public class ClassFinder {
      * encapsulate the <i>default package</i> instead of the requested
      * package.
      * <p>
-     * Resources are found using the calling thread's context class loader: <br/>
-     * <code>Thread.currentThread().getClassLoader()</code>
+     * Resources are found using the calling thread's context class loader: <br>
+     * {@code Thread.currentThread().getClassLoader()}
      *
      * @param packageName A package to check for resources.
      * @param classLoader The ClassLoader to use to search for resources.
@@ -142,8 +142,8 @@ public class ClassFinder {
      * encapsulate the <i>default package</i> instead of the requested
      * package.
      * <p>
-     * Resources are found using the calling thread's context class loader: <br/>
-     * <code>Thread.currentThread().getClassLoader()</code>
+     * Resources are found using the calling thread's context class loader: <br>
+     * {@code Thread.currentThread().getClassLoader()}
      *
      * @param packageName A package to check for resources.
      * @return a list of all resources found, trimmed to represent the default package.
@@ -163,8 +163,8 @@ public class ClassFinder {
      * directories and/or jar files as necessary.
      * <p>
      * Classes are not initialized when loaded.  Loading is performed by the 
-     * calling thread's context class loader:<br/>
-     * <code>Thread.currentThread().getContextClassLoader()</code>
+     * calling thread's context class loader:<br>
+     * {@code Thread.currentThread().getContextClassLoader()}
      * 
      * @param packageName The name of the package.
      * @param recurse Specifies whether class from subpackages should be included.
@@ -219,8 +219,8 @@ public class ClassFinder {
      * Finds all the classes in a resource.
      * <p>
      * Classes are not initialized when loaded.  Loading is performed by the 
-     * calling thread's context class loader:<br/>
-     * <code>Thread.currentThread().getContextClassLoader()</code>
+     * calling thread's context class loader:<br>
+     * {@code Thread.currentThread().getContextClassLoader()}
      * 
      * @param resource URL of resource to scan.  URL must represent a local directory or jar file.
      * @return the list of classes in specified package.
@@ -235,8 +235,8 @@ public class ClassFinder {
      * Finds all the classes in a resource.
      * <p>
      * Classes are not initialized when loaded.  Loading is performed by the 
-     * calling thread's context class loader:<br/>
-     * <code>Thread.currentThread().getContextClassLoader()</code>
+     * calling thread's context class loader:<br>
+     * {@code Thread.currentThread().getContextClassLoader()}
      * 
      * @param resource URL of resource to scan.  URL must represent a local directory or jar file.
      * @param classLoader The ClassLoader to use to search for and load classes.

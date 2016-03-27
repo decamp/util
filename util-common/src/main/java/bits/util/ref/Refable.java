@@ -16,21 +16,21 @@ package bits.util.ref;
  * initialization. Any thread/object that receives a reference to the Refable
  * SHOULD call "ref()" to increment the ref count. 
  * When the thread/object is finished with the refObject, it SHOULD call
- * <code>deref()</code> to decrement the ref count.  Once the refCount reaches zero, the
+ * {@code deref()} to decrement the ref count.  Once the refCount reaches zero, the
  * Refable object is disposed accordingly.
  * <p>
  * Example:
- * <br/><code>
- * Pool<Thingy> pool = new RefPool&lt;Thingy&gt;(); <br/>
- * Refable r = new Thingy(pool); <br />
- * <br/>
- * &#47;&#47;Increase reference count to 2 <br/>
- * r.ref(); <br/>
- * <br/>
- * &#47;&#47;Remove all references. <br/>
- * r.deref(); <br/>
- * r.deref(); <br/>
- * </code>
+ * <br><pre>{@code
+ * Pool<Thingy> pool = new RefPool<Thingy>();
+ * Refable r = new Thingy(pool); <br>
+ * <br>
+ * //Increase reference count to 2 <br>
+ * r.ref(); <br>
+ * <br>
+ * //Remove all references. <br>
+ * r.deref(); <br>
+ * r.deref(); <br>
+ * }</pre>
  * 
  * @author Philip DeCamp  
  */
