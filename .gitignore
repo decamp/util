@@ -1,11 +1,18 @@
-# Respectively: hidden files other than '.gitignore' and emacs cruft files.
 .*
 !.gitignore
-*~
 
-# IDE project files. 
+*~
 *.iml
 
+/build/
 /scratch/
-/target/
 /ext/
+/local.properties
+
+*/src/*/gen
+*/bin/
+*/scratch/
+*/build/
+*/target/
+*/ext/
+*/local.properties

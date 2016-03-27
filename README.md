@@ -1,8 +1,7 @@
 ### BITS Utility Library
-Various utilities. This is primarily a personal toolkit that many other projects depend on.
+Various utilities. Primarily a personal toolkit for code that used in many other projects.
 
-There's a lot of overlap between this library and Google Guava, including a lot of the classnames, unfortunately. E
-don't have any current plans to switch to Guava.
+There is unfortunately a lot of overlap between this library and Google Guava. 
 
 This library contains:
 - a bunch of static convenience methods
@@ -12,15 +11,14 @@ This library contains:
 - very basic tools for dealing with runtime platform
 
 ### Build:
-$ ant
+gradle  
+common - Contains code for all archs
+standard - Code for standard Java Runtime Environment only.
+android - Code for Android Runtime Environtment only.
 
 
 ### Runtime:
 After build, add all jars in **lib** and **target** directories to your project.
-
-
-### Dependencies:
-None.
 
 ---
 Author: Philip DeCamp

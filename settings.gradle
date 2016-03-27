@@ -1,0 +1,9 @@
+rootProject.name = 'util'
+
+gradle.ext.projectConfigs = [
+        'util-common'  : [ type: 'java_lib',    publish:'true' ],
+        'util-standard': [ type: 'java_lib',    publish:'true' ],
+        'util-android' : [ type: 'android_lib', publish:'true' ],
+]
+
+gradle.ext.projectConfigs.keySet().each { include it }
