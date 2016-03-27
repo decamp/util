@@ -12,7 +12,7 @@ buildscript {
 configure( subprojects ) { project ->
     group = 'com.github.decamp'
     buildDir = "$projectDir/build"
-    version = 'v0.0.0'
+    version = 'v0.0.1'
     def config = gradle.projectConfigs[ project.name ]
 
     repositories {
