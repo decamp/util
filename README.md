@@ -12,9 +12,9 @@ This library contains:
 
 ### Build:
 gradle  
-common - Contains code for all archs
-standard - Code for standard Java Runtime Environment only.
-android - Code for Android Runtime Environtment only.
+util-common - Contains code for all archs
+util-standard - Code for standard Java Runtime Environment only.
+util-android - Code for Android Runtime Environtment only.
 
 
 ### Runtime:
