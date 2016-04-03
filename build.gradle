@@ -12,7 +12,9 @@ buildscript {
 configure( subprojects ) { project ->
     group = 'com.github.decamp'
     buildDir = "$projectDir/build"
-    version = 'v0.0.3'
+    version = '0.0.4'
+    ext.versionCode = 4
+
     def config = gradle.projectConfigs[ project.name ]
 
     repositories {
@@ -60,12 +62,12 @@ configure( subprojects ) { project ->
             new File( "$buildDir/resources/main" ).mkdirs();
         }
 
-//        tasks.withType( Javadoc ) {
-//            options.addStringOption( 'Xdoclint:none', '-quiet' )
-//        }
+        javadoc {
+            failOnError false
+            //options.addStringOption( 'Xdoclint:none', '-quiet' )
+        }
 
-
-        task javadocJar(type: Jar, dependsOn: javadoc) {
+        task javadocJar( type: Jar, dependsOn: javadoc ) {
             classifier = 'javadoc'
             from "$buildDir/docs/javadoc"
         }
@@ -79,10 +81,9 @@ configure( subprojects ) { project ->
             apply plugin: 'maven'
             artifacts {
                 archives jar
-//                archives javadocJar
+                archives javadocJar
                 archives sourcesJar
             }
-            // See below for POM junk.
         }
 
     } else if( config.type.startsWith( 'android_' ) ) {
@@ -111,7 +112,7 @@ configure( subprojects ) { project ->
             }
 
             defaultConfig {
-                versionCode 1
+                versionCode versionCode
                 versionName project.version
                 minSdkVersion 19
                 targetSdkVersion 19
@@ -167,6 +168,7 @@ configure( subprojects ) { project ->
             }
         }
 
+
         dependencies {
             androidTestCompile 'junit:junit:4.12'
             androidTestCompile 'com.android.support.test:rules:0.4.1'
@@ -175,14 +177,28 @@ configure( subprojects ) { project ->
             androidTestCompile 'com.google.dexmaker:dexmaker-mockito:1.2'
         }
 
+
         task sourcesJar( type: Jar ) {
             classifier = 'sources'
             from android.sourceSets.main.java.srcDirs
         }
 
+        task javadoc(type: Javadoc) {
+            failOnError false
+            source = android.sourceSets.main.java.sourceFiles
+            classpath += project.files( android.getBootClasspath().join(File.pathSeparator) )
+            classpath += configurations.compile
+        }
+
+        task javadocJar( type: Jar, dependsOn: javadoc ) {
+            classifier = 'javadoc'
+            from javadoc.destinationDir
+        }
+
         if( config.publish ) {
             apply plugin: 'com.github.dcendents.android-maven'
             artifacts {
+//                archives javadocJar
                 archives sourcesJar
             }
         }
@@ -226,7 +242,6 @@ project( ':util-common' ) {
 
 project( ':util-standard' ) {
     description = 'Utils for standard Java Runtime Environment only.'
-
     dependencies {
         compile project( ":util-common" )
     }
@@ -235,4 +250,7 @@ project( ':util-standard' ) {
 
 project( ':util-android' ) {
     description = 'Utils for Android Runtime Environment only'
+    dependencies {
+        compile project( ":util-common" )
+    }
 }
