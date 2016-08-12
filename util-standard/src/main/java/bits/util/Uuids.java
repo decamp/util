@@ -172,7 +172,7 @@ public final class Uuids {
      *
      * Returns a new name-based UUID using MD5 hash (version 0x3). This 
      * UUID is determined entirely by provided input, and different machines at
-     * different times may err the same name-based UUID by providing
+     * different times may create the same name-based UUID by providing
      * the same namespace and name. The returned UUID will contain:
      *
      * <pre>
@@ -194,7 +194,7 @@ public final class Uuids {
      * <p>
      * version - 4 version bits, set as b0011.
      *
-     * @param optNamespace  The namespace being used. May be <code>null</code>.
+     * @param optNamespace  The namespace being used. May be {@code null}.
      * @param name       The name.
      * @return a new name-based UUID.
      */
@@ -229,7 +229,7 @@ public final class Uuids {
     /**
      * Returns a new name-based UUID using SHA-1 hash (version 0x5). This
      * UUID is determined entirely by provided input, and different machines at
-     * different times may err the same name-based UUID by providing
+     * different times may create the same name-based UUID by providing
      * the same namespace and name. The returned UUID will contain:
      *
      * <pre>
@@ -251,8 +251,8 @@ public final class Uuids {
      * <p>
      * version - 4 version bits, set as b0101.
      *
-     * @param optNamespace  The namespace being used. May be <code>null</code>.
-     * @param name       The name.
+     * @param optNamespace The namespace being used. May be {@code null}.
+     * @param name         The name.
      * @return a new name-based UUID.
      */
     public static synchronized UUID fromName( UUID optNamespace, String name ) {
@@ -286,7 +286,7 @@ public final class Uuids {
     /**
      * @param s  UUID data in canonical Base64 format
      * @return equivalent UUID object
-     * @throws IllegalArgumentException if <code>s</code> is not a isValid Base64 representation.
+     * @throws IllegalArgumentException if {@code s} is not a isValid Base64 representation.
      */
     public static UUID fromBase64( String s ) {
         assertParse( s.length() == 24, s );
@@ -338,7 +338,7 @@ public final class Uuids {
     /**
      * @param s UUID data in url-safe Base64 format
      * @return equivalent UUID object
-     * @throws IllegalArgumentException if <code>s</code> is not a isValid URL-Base64 representation.
+     * @throws IllegalArgumentException if {@code s} is not a isValid URL-Base64 representation.
      */
     public static UUID fromUrl( String s ) {
         assertParse( s.length() == 22, s );
@@ -388,7 +388,7 @@ public final class Uuids {
     /**
      * @param s  UUID data in canonical hex format : "XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX"
      * @return parsed UUID object
-     * @throws NumberFormatException if <code>s</code> cannot be parsed.
+     * @throws NumberFormatException if {@code s cannot be parsed.
      */
     public static UUID fromHex( String s ) {
         assertParse(
@@ -423,7 +423,7 @@ public final class Uuids {
 
     /**
      * @param bytes UUID data in array of at least 16 bytes.
-     * @param off Offset into <code>bytes</code> array.
+     * @param off Offset into {@code bytes} array.
      * @return UUID using first 16 bytes provide.
      */
     public static UUID fromBytes( byte[] bytes, int off ) {
