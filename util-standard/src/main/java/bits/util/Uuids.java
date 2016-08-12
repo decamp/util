@@ -388,7 +388,7 @@ public final class Uuids {
     /**
      * @param s  UUID data in canonical hex format : "XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX"
      * @return parsed UUID object
-     * @throws NumberFormatException if {@code s cannot be parsed.
+     * @throws NumberFormatException if {@code s} cannot be parsed.
      */
     public static UUID fromHex( String s ) {
         assertParse(

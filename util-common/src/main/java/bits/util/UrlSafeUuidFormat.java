@@ -16,8 +16,9 @@ import java.util.UUID;
  *
  * @author Philip DeCamp
  */
-public final class UrlSafeUuids {
-
+public final class UrlSafeUuidFormat {
+    
+    /** Regex that matches this UUID format. */
     public static final String REGEX = "[0-9A-Za-z-_]{22}";
     
     /**
@@ -25,10 +26,9 @@ public final class UrlSafeUuids {
      * @return equivalent UUID object
      * @throws IllegalArgumentException if {@code s} is not a valid URL-Base64 representation.
      */
-    public static UUID parse( String s ) {
+    public static UUID parse( String s ) throws IllegalArgumentException {
         assertParse( s.length() == 22, s );
 
-        //char[] c = s.toCharArray();
         long msb = 0;
         long lsb = 0;
 
@@ -103,22 +103,14 @@ public final class UrlSafeUuids {
         }
     }
 
-    /**
-     * The time difference between the JVM epoch: 01 Jan 1970 00:00:00 UTC and
-     * the RFC-4122 UUID epoch: 15 Oct 1582 00:00:00 UTC
-     *
-     * Note that this number is negative.
-     */
+    
     private static final char[] TABLE_TO_URL   = new char[64];
     private static final int[]  TABLE_FROM_URL = new int[128];
 
 
     static {
-        // Initialize Base64 conversion tables.
-        // Table was found as be faster in unit tests compared as if-thens or switches.
-        // While this may be partially due as these tables staying in cache,
-        // the branching version of the code was probably not much smaller than
-        // these tables anyway.
+        // Initialize conversion tables.
+        // Table was faster in a micro-benchmark than a switch-case. 
         for( int i = 0; i < 26; i++ ) {
             TABLE_TO_URL[i] = (char)('A' + i);
         }
