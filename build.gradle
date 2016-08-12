@@ -109,6 +109,8 @@ configure( subprojects ) { project ->
                         srcFile "$projectDir/src/main/AndroidManifest.xml"
                     }
                 }
+                
+                
             }
 
             defaultConfig {

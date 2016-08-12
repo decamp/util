@@ -53,6 +53,7 @@ import java.util.prefs.Preferences;
  * this class have <code>reserved = 0x2</code>.
  * 
  * @author Philip DeCamp
+ * @deprecated Use Uuids instead. java.util.UUID is now somewhat sane.
  */
 public final class Guid implements Serializable, Comparable<Guid> {
 
