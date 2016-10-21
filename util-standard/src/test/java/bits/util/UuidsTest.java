@@ -35,18 +35,10 @@ public class UuidsTest {
     }
 
     @Test
-    public void createName() {
+    public void nameSha256() {
         UUID domain  = Uuids.createRandom();
-        UUID name1   = Uuids.fromName( domain, "testing" );
-        UUID name2   = Uuids.fromName( domain, "testing" );
-        assertEquals( name1, name2 );
-    }
-
-    @Test
-    public void createNameOld() {
-        UUID domain  = Uuids.createRandom();
-        UUID name1   = Uuids.fromNameMd5( domain, "testing" );
-        UUID name2   = Uuids.fromNameMd5( domain, "testing" );
+        UUID name1   = Uuids.hashSha256( domain, "testing" );
+        UUID name2   = Uuids.hashSha256( domain, "testing" );
         assertEquals( name1, name2 );
     }
 
@@ -58,4 +50,22 @@ public class UuidsTest {
         assertEquals( b, Uuids.toBinString( Uuids.fromBinString( b ) ) );
     }
 
+    @Test
+    public void createMd5() {
+        UUID domain  = Uuids.createRandom();
+        UUID name1   = Uuids.hashMd5( domain, "testing" );
+        UUID name2   = Uuids.hashMd5( domain, "testing" );
+        assertEquals( name1, name2 );
+    }
+
+    @Test
+    public void hashSha1() {
+        UUID domain  = Uuids.createRandom();
+        UUID name1   = Uuids.hashSha1( domain, "testing" );
+        UUID name2   = Uuids.hashSha1( domain, "testing" );
+        assertEquals( name1, name2 );
+    }
+
 }
+
+

@@ -5,9 +5,9 @@
  */
 package bits.util;
 
-import java.io.*;
-import java.net.*;
-import java.nio.ByteBuffer;
+        import java.io.*;
+        import java.net.*;
+        import java.nio.ByteBuffer;
 
 
 /**
@@ -28,7 +28,7 @@ public final class Resources {
         return Resources.class.getClassLoader().getResource( path );
     }
 
-    
+
     public static String readString( String path ) throws IOException {
         URL url = find( path );
         if( url == null ) {
@@ -43,7 +43,7 @@ public final class Resources {
         return url == null ? null : Streams.readBytes( url );
     }
 
-    
+
     private Resources() {}
-    
+
 }
